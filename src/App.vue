@@ -1,28 +1,37 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app" class="container-fluid m-0 p-0">
+    <Header/>
+    <Greetings/>
+    <Footer />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Greetings from './components/Greetings.vue'
+import Header from './components/Header.vue'
+import Footer from './components/Footer.vue'
 
 export default {
   name: 'App',
+  created(){
+    document.title = "VHU 24 Years Anniversary"    
+  },
   components: {
-    HelloWorld
+    Header,
+    Greetings,
+    Footer
   }
 }
 </script>
-
 <style>
+.container-fluid{
+  background-color: #F7F8FC;
+}
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  color: #234384;
 }
 </style>
