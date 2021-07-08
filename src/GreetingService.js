@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const url = 'http://localhost:5000/api/loi-chuc/';
+const url = '/api/loi-chuc/';
 class GreetingService {
   // Get Greetings
   static async getGreetings() {

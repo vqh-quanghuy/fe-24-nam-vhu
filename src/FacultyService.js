@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const url = 'http://localhost:5000/api/ds-khoa/';
+const url = '/api/ds-khoa/';
 class FacultyService {
   // Get Falcuties
   static async getFaculties() {
