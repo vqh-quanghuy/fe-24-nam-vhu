@@ -7,10 +7,6 @@ class GreetingService {
     try{
       const res = await axios.get(url);
       const data = res.data;
-      data.map(greeting => ({
-        ...greeting,
-        createdAt: new Date(greeting.createdAt)
-      }))
       return data;
     } catch (err){
       return err;
