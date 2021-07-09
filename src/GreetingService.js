@@ -13,9 +13,10 @@ class GreetingService {
     }
   }
   // New Greetings
-  static async insertGreeting(name, faculty, greeting) {
+  static async insertGreeting(name, role, faculty, greeting) {
     const result = axios.post(url, {
       name,
+      role,
       faculty,
       greeting
     })

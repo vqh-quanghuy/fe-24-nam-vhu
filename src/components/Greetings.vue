@@ -7,13 +7,14 @@
     data-aos-easing="ease-in-out"
     data-aos-once="false"
     data-aos-anchor-placement="top-center">
-    <b-row class="my-3">
-      <h1>Tiêu đề chương trình ở đây</h1>
-      <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vel orci vitae odio efficitur ullamcorper. In hac habitasse platea dictumst. Aenean id fringilla odio. In gravida, velit vel dapibus mattis, eros erat pretium lorem, quis eleifend dui turpis et nunc. Phasellus pulvinar cursus ligula, in porta ante fringilla vitae. Sed sed ultricies velit, nec rutrum est. Vestibulum accumsan vel lectus eget maximus. Maecenas viverra nisi ultricies pharetra dignissim. Aliquam a dapibus sem. Curabitur quis convallis lacus. </span>
+    <b-row class="mt-5 mb-3">
+      <h2>CHÀO MỪNG KỶ NIỆM 24 NĂM THÀNH LẬP TRƯỜNG ĐẠI HỌC VĂN HIẾN</h2>
+      <h3>(11/7/1997 - 11/7/2021)</h3>
+      <span>VHUers Check-in mừng sinh nhật trường</span>
     </b-row>
     <b-row id="formHeading" class="mt-5 justify-content-center">
       <b-col lg="6" sm="12">
-        <h6>Gửi lời chúc ý nghĩa nhất của bạn đến...</h6>
+        <h6>Gửi lời chúc ý nghĩa nhất của bạn</h6>
         <h3>Thông tin và lời chúc!</h3>
       </b-col>
     </b-row>
@@ -40,6 +41,16 @@
           <b-form-invalid-feedback v-if="!nameValid && nameValid!==null">
             {{checkName()}}
           </b-form-invalid-feedback>
+        </b-form-group>
+        <b-form-group class="my-2" id="role" label="Bạn là:" v-slot="{ ariaDescribedby }">
+          <b-form-radio-group
+            v-model="selected"
+            :options="options"
+            :aria-describedby="ariaDescribedby"
+            name="role"
+            size="lg"
+            plain
+          ></b-form-radio-group>
         </b-form-group>
         <b-form-group class="my-3" id="faculty" label="Khoa:" label-for="faculty">
           <b-form-select
@@ -83,7 +94,7 @@
     <b-row class="my-3 greetings-section" data-aos="fade-up"
     data-aos-duration="1500">
       <b-row class="mt-5 justify-content-center">
-        <h3 class="greeting-heading">Đã có {{total}} lời chúc gửi đến</h3>
+        <h3 class="greeting-heading">Đã có {{total}} lời chúc được gửi đến</h3>
       </b-row>
       <b-row class="mt-3 mb-5 mx-auto">
         <b-col lg="6" md="12" sm="12" class="scroll-container" data-aos="fade-up"
@@ -93,7 +104,7 @@
           data-aos-easing="ease-in-out"
           data-aos-once="false">
           <b-card-group class="my-2" v-for="greeting in greetings" :key="greeting._id">
-            <b-card :title="`${greeting.name}`" :sub-title="`${greeting.faculty}`">
+            <b-card :title="`${greeting.role!==undefined?greeting.role:''} ${greeting.name}`" :sub-title="`${greeting.faculty}`">
               <b-card-text>
                 {{greeting.greeting}}
               </b-card-text>
@@ -110,7 +121,7 @@
         <b-progress :max="max" v-show="modalProgress" show-progress :animated="true">
           <b-progress-bar :value="value" :label-html="`Rendering... ${value}%`" variant="success"></b-progress-bar>
         </b-progress>
-        <b-row id="frame" class="d-block mx-auto">
+        <b-row id="frame" class="d-block mx-auto text-center">
           <canvas v-show="canvasProgress" class="d-block mx-auto" ref="canvas" id="main-frame" width=8510 height=3150></canvas>
           <span class="text-secondary mb-4">*Lưu ý: trên một số thiết bị điện thoại, ảnh preview trên có thể bị vỡ và chỉ xem được đúng kích thước khi tải về</span>
         </b-row>
@@ -132,7 +143,7 @@
 <script>
 import GreetingService from '../GreetingService';
 import FacultyService from '../FacultyService';
-import frameImage from "../assets/testimage.jpg";
+import frameImage from "../assets/banner.png";
 
 export default {
   name: 'Greetings',
@@ -159,9 +170,14 @@ export default {
       value: 0,
       timer: 0,
       canvasProgress: false,
-      currentY: 600,
+      currentY: 500,
       sendSuccess: false,
       clicked: false,
+      selected: 'Sinh viên',
+        options: [
+          { text: 'Sinh viên', value: 'Sinh viên' },
+          { text: 'Cựu sinh viên', value: 'Cựu sinh viên' },
+        ]
     }
   },
   async created() {
@@ -195,19 +211,19 @@ export default {
   methods: {
     startTimer() {
       let timer = setInterval(() => {
-        this.value += 5;
+        this.value += 10;
         if(this.value > 100) {
           clearInterval(timer);
           this.value = 0;
         }
-      }, 100);
+      }, 250);
     },
     countDownChanged(dismissCountDown) {
       this.dismissCountDown = dismissCountDown
     },
     closeModal(){
       this.flag = false;
-      this.currentY = 600;
+      this.currentY = 500;
       this.modalProgress = true;
       this.canvasProgress = false;
       this.clicked = false;
@@ -223,6 +239,10 @@ export default {
       facultiesIDs.shift();
       let checkForName = this.checkName();
       let checkForGreeting = this.checkGreeting();
+      if(!this.selected === "Sinh viên" || !this.selected === "Cựu sinh viên") {
+        this.errors.push("Role này không có trong hệ thống!");
+        flag = false;
+      }
       if(this.faculty==null) {
         this.errors.push("Vui lòng chọn Khoa!");
         flag = false;
@@ -349,25 +369,28 @@ export default {
           const frame = images.image1;
           const avt = images.image2;
           ctx.drawImage(frame, 0, 0, frame.width, frame.height, 0, 0, c.width, c.height);
-          ctx.drawImage(avt, 0, 0, avt.width, avt.height, 6300, 500, 1500, 1500);
-          ctx.font = "bold 100px Roboto";
+          ctx.drawImage(avt, 0, 0, avt.width, avt.height, 6100, 685, 1800, 1800);
           ctx.fillStyle = "white";
           ctx.textAlign = "start";
+          greeting.length <= 400?ctx.font="bold 150px roboto":ctx.font="bold 120px roboto";
           if(greeting.match(/\r?\n|\r/g)){
             const breakline = greeting.split("\n");
             breakline.forEach(line => {
-              this.wrapText(ctx, line, 500, this.currentY+150, 5500, 150);
+              this.wrapText(ctx, line, 500, this.currentY+150, 5000, 150);
             })
           } else {
-            this.wrapText(ctx, greeting, 500, 1100, 5500, 150);
+            this.wrapText(ctx, greeting, 500, 1100, 5000, 150);
           }
           ctx.textAlign = "left";
-          ctx.font = "bold 120px Roboto";
-          ctx.fillText(name.toUpperCase(), 500, this.currentY+200);
-          const nameWidth = ctx.measureText(name.toUpperCase());
-          ctx.fillText(" - "+facultyName.toUpperCase(), nameWidth.width+500, this.currentY+200);
+          ctx.font = "bold 150px Roboto";
+          const role = this.selected;
+          ctx.fillText(role, 500, this.currentY + 200)
+          const roleWidth = ctx.measureText(" "+role);
+          ctx.fillText(" "+name.toUpperCase(), roleWidth.width+500, this.currentY+200);
+          const nameWidth = ctx.measureText(name.toUpperCase()+" ");
+          ctx.fillText(" - "+facultyName.toUpperCase(), nameWidth.width+500+roleWidth.width, this.currentY+200);
         });
-      }, 2000);
+      }, 2500);
     },
     downloadImage(){
       let canvas = this.$refs.canvas;
@@ -452,11 +475,11 @@ export default {
     async createGreeting() {
       this.errors = [];
       this.clicked = true;
-      const res = await GreetingService.insertGreeting(this.name, this.faculty, this.greeting);
+      const res = await GreetingService.insertGreeting(this.name, this.selected, this.faculty, this.greeting);
       this.renderImage();
       if(res.status==201){
         this.sendSuccess = true;
-        this.currentY = 600;
+        this.currentY = 500;
       } else {
         Object.keys(res).forEach(key => {
           this.errors.push(res[key]);
@@ -464,7 +487,7 @@ export default {
         this.$refs['modal-1'].hide();
         document.getElementById("errors-holder").scrollIntoView({behavior: 'smooth', block: "center"});
         this.flag = false;
-        this.currentY = 600;
+        this.currentY = 500;
         this.modalProgress = true;
         this.canvasProgress = false;
       }
@@ -551,6 +574,13 @@ export default {
   background-color: transparent;
   border-radius: 0.3rem;
   display: block;
+}
+#role {
+  text-align: left;
+  color: #696F79;
+}
+#role > legend {
+  font-weight: bold;
 }
 .red-shadow{
   color:#dc3545;
