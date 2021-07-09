@@ -122,8 +122,8 @@
           <b-progress-bar :value="value" :label-html="`Rendering... ${value}%`" variant="success"></b-progress-bar>
         </b-progress>
         <b-row id="frame" class="d-block mx-auto text-center">
-          <canvas v-show="canvasProgress" class="d-block mx-auto" ref="canvas" id="main-frame" width=8510 height=3150></canvas>
-          <span class="text-secondary mb-4">*Lưu ý: trên một số thiết bị điện thoại, ảnh preview trên có thể bị vỡ và chỉ xem được đúng kích thước khi tải về</span>
+          <canvas v-show="canvasProgress" class="d-block mx-auto" ref="canvas" id="main-frame" width=2553 height=945></canvas>
+          <span class="text-secondary mb-4">*Lưu ý: Click chuột phải chọn "Save Image As..." nếu không lưu được hình.<br>Trên một số thiết bị điện thoại, ảnh preview trên có thể bị vỡ và chỉ xem được đúng kích thước khi tải về</span>
         </b-row>
         <b-row class="mt-3 w-75 mx-auto" v-if="!sendSuccess">
           <b-button @click="createGreeting()" :disabled="clicked" block variant="primary" size="lg">Gửi lời chúc!</b-button>
@@ -170,7 +170,7 @@ export default {
       value: 0,
       timer: 0,
       canvasProgress: false,
-      currentY: 500,
+      currentY: 180,
       sendSuccess: false,
       clicked: false,
       selected: 'Sinh viên',
@@ -223,7 +223,7 @@ export default {
     },
     closeModal(){
       this.flag = false;
-      this.currentY = 500;
+      this.currentY = 210;
       this.modalProgress = true;
       this.canvasProgress = false;
       this.clicked = false;
@@ -333,21 +333,21 @@ export default {
     },
     wrapText(ctx, greeting, x, y, maxWidth, lineHeight){
       let words = greeting.split(" ");
-        let line = '';
-        for(let n = 0; n<words.length; n++){
-          let testLine = line + words[n] + " ";
-          let metrics = ctx.measureText(testLine);
-          let testWidth = metrics.width;
-          if(testWidth > maxWidth && n > 0) {
-            ctx.fillText(line, x, y);
-            line = words[n] + ' ';
-            y += lineHeight;
-          } else {
-            line = testLine;
-          }
+      let line = '';
+      for(let n = 0; n<words.length; n++){
+        let testLine = line + words[n] + " ";
+        let metrics = ctx.measureText(testLine);
+        let testWidth = metrics.width;
+        if(testWidth > maxWidth && n > 0) {
           ctx.fillText(line, x, y);
-          this.currentY = y;
+          line = words[n] + ' ';
+          y += lineHeight;
+        } else {
+          line = testLine;
         }
+        ctx.fillText(line, x, y);
+        this.currentY = y;
+      }
     },
     renderImage(){
       this.startTimer();
@@ -369,26 +369,26 @@ export default {
           const frame = images.image1;
           const avt = images.image2;
           ctx.drawImage(frame, 0, 0, frame.width, frame.height, 0, 0, c.width, c.height);
-          ctx.drawImage(avt, 0, 0, avt.width, avt.height, 6100, 685, 1800, 1800);
+          ctx.drawImage(avt, 0, 0, avt.width, avt.height, 1830, 204, 540, 540);
           ctx.fillStyle = "white";
-          ctx.textAlign = "start";
-          greeting.length <= 400?ctx.font="bold 150px roboto":ctx.font="bold 120px roboto";
+          ctx.textAlign = "left";
+          greeting.length <= 400?ctx.font="bold 45px roboto":ctx.font="bold 40px roboto";
           if(greeting.match(/\r?\n|\r/g)){
             const breakline = greeting.split("\n");
             breakline.forEach(line => {
-              this.wrapText(ctx, line, 500, this.currentY+150, 5000, 150);
+              this.wrapText(ctx, line, 150, this.currentY+45, 1500, 45);
             })
           } else {
-            this.wrapText(ctx, greeting, 500, 1100, 5000, 150);
+            this.wrapText(ctx, greeting, 150, 330, 1500, 45);
           }
           ctx.textAlign = "left";
-          ctx.font = "bold 150px Roboto";
+          ctx.font = "bold 45px Roboto";
           const role = this.selected;
-          ctx.fillText(role, 500, this.currentY + 200)
+          ctx.fillText(role, 150, this.currentY + 60)
           const roleWidth = ctx.measureText(" "+role);
-          ctx.fillText(" "+name.toUpperCase(), roleWidth.width+500, this.currentY+200);
+          ctx.fillText(" "+name.toUpperCase(), roleWidth.width+150, this.currentY+60);
           const nameWidth = ctx.measureText(name.toUpperCase()+" ");
-          ctx.fillText(" - "+facultyName.toUpperCase(), nameWidth.width+500+roleWidth.width, this.currentY+200);
+          ctx.fillText(" - "+facultyName.toUpperCase(), nameWidth.width+150+roleWidth.width, this.currentY+60);
         });
       }, 2500);
     },
@@ -479,7 +479,7 @@ export default {
       this.renderImage();
       if(res.status==201){
         this.sendSuccess = true;
-        this.currentY = 500;
+        this.currentY = 210;
       } else {
         Object.keys(res).forEach(key => {
           this.errors.push(res[key]);
@@ -487,7 +487,7 @@ export default {
         this.$refs['modal-1'].hide();
         document.getElementById("errors-holder").scrollIntoView({behavior: 'smooth', block: "center"});
         this.flag = false;
-        this.currentY = 500;
+        this.currentY = 210;
         this.modalProgress = true;
         this.canvasProgress = false;
       }
