@@ -112,24 +112,22 @@
           </b-card-group>
         </b-col>
         <b-col lg="6" md="12" sm="12" id="campus-image">
-          <b-img src="https://i.vgy.me/mRkuyF.jpg" id="vhu-campus" fluid alt="vhu-campus"></b-img>
+          <b-img src="https://i.vgy.me/ntpTRc.png" id="vhu-campus" fluid alt="Banner 24 năm"></b-img>
         </b-col>
       </b-row>
     </b-row>
     <div>
       <b-modal v-if="flag" no-close-on-backdrop ref="modal-1" id="modal-1" title="Tải về Frame hình" hide-footer>
-        <b-progress :max="max" v-show="modalProgress" show-progress :animated="true">
-          <b-progress-bar :value="value" :label-html="`Rendering... ${value}%`" variant="success"></b-progress-bar>
-        </b-progress>
+        <img v-if="modalProgress" class="d-block mx-auto mt-5" src="../assets/loading.gif" alt="loading gif">
         <b-row id="frame" class="d-block mx-auto text-center">
           <canvas v-show="canvasProgress" class="d-block mx-auto" ref="canvas" id="main-frame" width=2553 height=945></canvas>
           <span class="text-secondary mb-4">*Lưu ý: Click chuột phải chọn "Save Image As..." nếu không lưu được hình.<br>Trên một số thiết bị điện thoại, ảnh preview trên có thể bị vỡ và chỉ xem được đúng kích thước khi tải về</span>
         </b-row>
         <b-row class="mt-3 w-75 mx-auto" v-if="!sendSuccess">
-          <b-button @click="createGreeting()" :disabled="clicked" block variant="primary" size="lg">Gửi lời chúc!</b-button>
+          <b-button @click="createGreeting()" :disabled="clicked||modalProgress" style="font-weight: bold; font-size: 1.5rem;" block variant="primary" size="lg">Gửi lời chúc!</b-button>
         </b-row>
-        <b-row class="my-4 w-25 mx-auto" v-if="!sendSuccess">
-          <b-button @click="$bvModal.hide('modal-1'); closeModal();" size="md" variant="outline-dark">Hủy, viết lại</b-button>
+        <b-row class="my-4 w-50 mx-auto" v-if="!sendSuccess">
+          <b-button @click="$bvModal.hide('modal-1'); closeModal();" size="sm" variant="outline-dark">Hủy, viết lại</b-button>
         </b-row>
         <b-row class="my-4 w-100 mx-auto" v-if="sendSuccess">
           <p class="my-4">Lời chúc được gửi thành công, bạn có thể tải ảnh bằng nút sau!<br></p>
@@ -166,9 +164,6 @@ export default {
       flag: false,
       facultyName: null,
       modalProgress: true,
-      max: 100,
-      value: 0,
-      timer: 0,
       canvasProgress: false,
       currentY: 180,
       sendSuccess: false,
@@ -209,15 +204,6 @@ export default {
     }
   },
   methods: {
-    startTimer() {
-      let timer = setInterval(() => {
-        this.value += 10;
-        if(this.value > 100) {
-          clearInterval(timer);
-          this.value = 0;
-        }
-      }, 250);
-    },
     countDownChanged(dismissCountDown) {
       this.dismissCountDown = dismissCountDown
     },
@@ -350,7 +336,6 @@ export default {
       }
     },
     renderImage(){
-      this.startTimer();
       setTimeout(async ()=>{
         this.modalProgress = false;
         this.canvasProgress = true;
@@ -592,10 +577,11 @@ export default {
   background: linear-gradient(180deg, #0192DE 0%, #BBC7DF 105.73%);
 }
 .greeting-heading{
-  -webkit-text-stroke: 0.5px #fff;
+  -webkit-text-stroke: 0.25px #fff;
+  color: #fff;
   font-weight: 900;
   font-size: 2rem;
-  text-shadow: 0px 0px 5px #fff;
+  text-shadow: 0px 0px 3px #fff;
   text-transform: uppercase;
 }
 .card-group{
@@ -644,6 +630,10 @@ export default {
 @media only screen and (max-width: 600px) {
   #campus-image{
     display: none;
+  }
+  #main-frame {
+    width: 425px;
+    height: 157px;
   }
 }
 </style>
