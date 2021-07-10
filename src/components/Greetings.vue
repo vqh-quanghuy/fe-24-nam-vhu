@@ -142,6 +142,7 @@
 import GreetingService from '../GreetingService';
 import FacultyService from '../FacultyService';
 import frameImage from "../assets/banner.png";
+import logo24years from "../assets/logo24years.png";
 
 export default {
   name: 'Greetings',
@@ -337,7 +338,7 @@ export default {
     },
     renderImage(){
       setTimeout(async ()=>{
-        this.modalProgress = false;
+        // this.modalProgress = false;
         this.canvasProgress = true;
         this.greeting = this.greeting.trim();
         let c = this.$refs.canvas;
@@ -348,13 +349,16 @@ export default {
         let avtCrop = await this.crop(URL.createObjectURL(this.avtImage), 1);
         let sources = {
           image1: frameImage,
-          image2: avtCrop.toDataURL("image/png")
+          image2: avtCrop.toDataURL("image/png"),
+          image3: logo24years
         };
         this.loadImages(sources, images => {
           const frame = images.image1;
           const avt = images.image2;
+          const logo = images.image3;
           ctx.drawImage(frame, 0, 0, frame.width, frame.height, 0, 0, c.width, c.height);
           ctx.drawImage(avt, 0, 0, avt.width, avt.height, 1830, 204, 540, 540);
+          ctx.drawImage(logo, 0, 0, logo.width, logo.height, 2100, 550, 350, 350);
           ctx.fillStyle = "white";
           ctx.textAlign = "left";
           greeting.length <= 400?ctx.font="bold 45px roboto":ctx.font="bold 36px roboto";
@@ -370,11 +374,12 @@ export default {
           ctx.font = "bold 45px Roboto";
           ctx.fillStyle = "#FEDE5E";
           const role = this.selected;
-          ctx.fillText(role, 150, this.currentY + 80)
+          ctx.fillText(role, 150, this.currentY + 70)
           const roleWidth = ctx.measureText(" "+role);
-          ctx.fillText(" "+name.toUpperCase(), roleWidth.width+140, this.currentY+80);
+          ctx.fillText(" "+name.toUpperCase(), roleWidth.width+140, this.currentY+70);
           const nameWidth = ctx.measureText(name.toUpperCase()+" ");
-          ctx.fillText(" - "+facultyName.toUpperCase(), nameWidth.width+140+roleWidth.width, this.currentY+80);
+          ctx.fillText(" - "+facultyName.toUpperCase(), nameWidth.width+140+roleWidth.width, this.currentY+70);
+          this.modalProgress = false;
         });
       }, 2500);
     },
