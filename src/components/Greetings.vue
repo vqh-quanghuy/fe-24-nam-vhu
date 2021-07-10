@@ -121,7 +121,7 @@
         <img v-if="modalProgress" class="d-block mx-auto mt-5" src="../assets/loading.gif" alt="loading gif">
         <b-row id="frame" class="d-block mx-auto text-center">
           <canvas v-show="canvasProgress" class="d-block mx-auto" ref="canvas" id="main-frame" width=2553 height=945></canvas>
-          <span class="text-secondary mb-4">*Lưu ý: Click chuột phải chọn "Save Image As..." nếu không lưu được hình.<br>Trên một số thiết bị điện thoại, ảnh preview trên có thể bị vỡ và chỉ xem được đúng kích thước khi tải về</span>
+          <span class="text-secondary mb-4 subline-modal">*Lưu ý: Click chuột phải chọn "Save Image As..." nếu không lưu được hình.<br>Trên một số thiết bị điện thoại, ảnh preview trên có thể bị vỡ và chỉ xem được đúng kích thước khi tải về</span>
         </b-row>
         <b-row class="mt-3 w-75 mx-auto" v-if="!sendSuccess">
           <b-button @click="createGreeting()" :disabled="clicked||modalProgress" style="font-weight: bold; font-size: 1.5rem;" block variant="primary" size="lg">Gửi lời chúc!</b-button>
@@ -357,23 +357,24 @@ export default {
           ctx.drawImage(avt, 0, 0, avt.width, avt.height, 1830, 204, 540, 540);
           ctx.fillStyle = "white";
           ctx.textAlign = "left";
-          greeting.length <= 400?ctx.font="bold 45px roboto":ctx.font="bold 40px roboto";
+          greeting.length <= 400?ctx.font="bold 45px roboto":ctx.font="bold 36px roboto";
           if(greeting.match(/\r?\n|\r/g)){
             const breakline = greeting.split("\n");
             breakline.forEach(line => {
-              this.wrapText(ctx, line, 150, this.currentY+45, 1500, 45);
+              this.wrapText(ctx, line, 150, this.currentY+50, 1500, 50);
             })
           } else {
-            this.wrapText(ctx, greeting, 150, 330, 1500, 45);
+            this.wrapText(ctx, greeting, 150, 330, 1500, 50);
           }
           ctx.textAlign = "left";
           ctx.font = "bold 45px Roboto";
+          ctx.fillStyle = "#FEDE5E";
           const role = this.selected;
-          ctx.fillText(role, 150, this.currentY + 60)
+          ctx.fillText(role, 150, this.currentY + 80)
           const roleWidth = ctx.measureText(" "+role);
-          ctx.fillText(" "+name.toUpperCase(), roleWidth.width+150, this.currentY+60);
+          ctx.fillText(" "+name.toUpperCase(), roleWidth.width+140, this.currentY+80);
           const nameWidth = ctx.measureText(name.toUpperCase()+" ");
-          ctx.fillText(" - "+facultyName.toUpperCase(), nameWidth.width+150+roleWidth.width, this.currentY+60);
+          ctx.fillText(" - "+facultyName.toUpperCase(), nameWidth.width+140+roleWidth.width, this.currentY+80);
         });
       }, 2500);
     },
@@ -632,8 +633,11 @@ export default {
     display: none;
   }
   #main-frame {
-    width: 425px;
-    height: 157px;
+    width: 425.5px;
+    height: 157.5px;
+  }
+  .subline-modal{
+    font-size: 0.7rem;
   }
 }
 </style>
