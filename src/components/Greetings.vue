@@ -112,24 +112,22 @@
           </b-card-group>
         </b-col>
         <b-col lg="6" md="12" sm="12" id="campus-image">
-          <b-img src="https://i.vgy.me/mRkuyF.jpg" id="vhu-campus" fluid alt="vhu-campus"></b-img>
+          <b-img src="https://i.vgy.me/ntpTRc.png" id="vhu-campus" fluid alt="Banner 24 năm"></b-img>
         </b-col>
       </b-row>
     </b-row>
     <div>
       <b-modal v-if="flag" no-close-on-backdrop ref="modal-1" id="modal-1" title="Tải về Frame hình" hide-footer>
-        <b-progress :max="max" v-show="modalProgress" show-progress :animated="true">
-          <b-progress-bar :value="value" :label-html="`Rendering... ${value}%`" variant="success"></b-progress-bar>
-        </b-progress>
+        <img v-if="modalProgress" class="d-block mx-auto mt-5" src="../assets/loading.gif" alt="loading gif">
         <b-row id="frame" class="d-block mx-auto text-center">
-          <canvas v-show="canvasProgress" class="d-block mx-auto" ref="canvas" id="main-frame" width=8510 height=3150></canvas>
-          <span class="text-secondary mb-4">*Lưu ý: trên một số thiết bị điện thoại, ảnh preview trên có thể bị vỡ và chỉ xem được đúng kích thước khi tải về</span>
+          <canvas v-show="canvasProgress" class="d-block mx-auto" ref="canvas" id="main-frame" width=2553 height=945></canvas>
+          <span class="text-secondary mb-4 subline-modal">*Lưu ý: Click chuột phải chọn "Save Image As..." nếu không lưu được hình.<br>Trên một số thiết bị điện thoại, ảnh preview trên có thể bị vỡ và chỉ xem được đúng kích thước khi tải về</span>
         </b-row>
         <b-row class="mt-3 w-75 mx-auto" v-if="!sendSuccess">
-          <b-button @click="createGreeting()" :disabled="clicked" block variant="primary" size="lg">Gửi lời chúc!</b-button>
+          <b-button @click="createGreeting()" :disabled="clicked||modalProgress" style="font-weight: bold; font-size: 1.5rem;" block variant="primary" size="lg">Gửi lời chúc!</b-button>
         </b-row>
-        <b-row class="my-4 w-25 mx-auto" v-if="!sendSuccess">
-          <b-button @click="$bvModal.hide('modal-1'); closeModal();" size="md" variant="outline-dark">Hủy, viết lại</b-button>
+        <b-row class="my-4 w-50 mx-auto" v-if="!sendSuccess">
+          <b-button @click="$bvModal.hide('modal-1'); closeModal();" size="sm" variant="outline-dark">Hủy, viết lại</b-button>
         </b-row>
         <b-row class="my-4 w-100 mx-auto" v-if="sendSuccess">
           <p class="my-4">Lời chúc được gửi thành công, bạn có thể tải ảnh bằng nút sau!<br></p>
@@ -144,6 +142,7 @@
 import GreetingService from '../GreetingService';
 import FacultyService from '../FacultyService';
 import frameImage from "../assets/banner.png";
+import logo24years from "../assets/logo24years.png";
 
 export default {
   name: 'Greetings',
@@ -166,11 +165,8 @@ export default {
       flag: false,
       facultyName: null,
       modalProgress: true,
-      max: 100,
-      value: 0,
-      timer: 0,
       canvasProgress: false,
-      currentY: 500,
+      currentY: 180,
       sendSuccess: false,
       clicked: false,
       selected: 'Sinh viên',
@@ -209,21 +205,12 @@ export default {
     }
   },
   methods: {
-    startTimer() {
-      let timer = setInterval(() => {
-        this.value += 10;
-        if(this.value > 100) {
-          clearInterval(timer);
-          this.value = 0;
-        }
-      }, 250);
-    },
     countDownChanged(dismissCountDown) {
       this.dismissCountDown = dismissCountDown
     },
     closeModal(){
       this.flag = false;
-      this.currentY = 500;
+      this.currentY = 210;
       this.modalProgress = true;
       this.canvasProgress = false;
       this.clicked = false;
@@ -333,26 +320,25 @@ export default {
     },
     wrapText(ctx, greeting, x, y, maxWidth, lineHeight){
       let words = greeting.split(" ");
-        let line = '';
-        for(let n = 0; n<words.length; n++){
-          let testLine = line + words[n] + " ";
-          let metrics = ctx.measureText(testLine);
-          let testWidth = metrics.width;
-          if(testWidth > maxWidth && n > 0) {
-            ctx.fillText(line, x, y);
-            line = words[n] + ' ';
-            y += lineHeight;
-          } else {
-            line = testLine;
-          }
+      let line = '';
+      for(let n = 0; n<words.length; n++){
+        let testLine = line + words[n] + " ";
+        let metrics = ctx.measureText(testLine);
+        let testWidth = metrics.width;
+        if(testWidth > maxWidth && n > 0) {
           ctx.fillText(line, x, y);
-          this.currentY = y;
+          line = words[n] + ' ';
+          y += lineHeight;
+        } else {
+          line = testLine;
         }
+        ctx.fillText(line, x, y);
+        this.currentY = y;
+      }
     },
     renderImage(){
-      this.startTimer();
       setTimeout(async ()=>{
-        this.modalProgress = false;
+        // this.modalProgress = false;
         this.canvasProgress = true;
         this.greeting = this.greeting.trim();
         let c = this.$refs.canvas;
@@ -363,32 +349,37 @@ export default {
         let avtCrop = await this.crop(URL.createObjectURL(this.avtImage), 1);
         let sources = {
           image1: frameImage,
-          image2: avtCrop.toDataURL("image/png")
+          image2: avtCrop.toDataURL("image/png"),
+          image3: logo24years
         };
         this.loadImages(sources, images => {
           const frame = images.image1;
           const avt = images.image2;
+          const logo = images.image3;
           ctx.drawImage(frame, 0, 0, frame.width, frame.height, 0, 0, c.width, c.height);
-          ctx.drawImage(avt, 0, 0, avt.width, avt.height, 6100, 685, 1800, 1800);
+          ctx.drawImage(avt, 0, 0, avt.width, avt.height, 1830, 204, 540, 540);
+          ctx.drawImage(logo, 0, 0, logo.width, logo.height, 2100, 550, 350, 350);
           ctx.fillStyle = "white";
-          ctx.textAlign = "start";
-          greeting.length <= 400?ctx.font="bold 150px roboto":ctx.font="bold 120px roboto";
+          ctx.textAlign = "left";
+          greeting.length <= 400?ctx.font="bold 45px roboto":ctx.font="bold 36px roboto";
           if(greeting.match(/\r?\n|\r/g)){
             const breakline = greeting.split("\n");
             breakline.forEach(line => {
-              this.wrapText(ctx, line, 500, this.currentY+150, 5000, 150);
+              this.wrapText(ctx, line, 150, this.currentY+50, 1500, 50);
             })
           } else {
-            this.wrapText(ctx, greeting, 500, 1100, 5000, 150);
+            this.wrapText(ctx, greeting, 150, 330, 1500, 50);
           }
           ctx.textAlign = "left";
-          ctx.font = "bold 150px Roboto";
+          ctx.font = "bold 45px Roboto";
+          ctx.fillStyle = "#FEDE5E";
           const role = this.selected;
-          ctx.fillText(role, 500, this.currentY + 200)
+          ctx.fillText(role, 150, this.currentY + 70)
           const roleWidth = ctx.measureText(" "+role);
-          ctx.fillText(" "+name.toUpperCase(), roleWidth.width+500, this.currentY+200);
+          ctx.fillText(" "+name.toUpperCase(), roleWidth.width+140, this.currentY+70);
           const nameWidth = ctx.measureText(name.toUpperCase()+" ");
-          ctx.fillText(" - "+facultyName.toUpperCase(), nameWidth.width+500+roleWidth.width, this.currentY+200);
+          ctx.fillText(" - "+facultyName.toUpperCase(), nameWidth.width+140+roleWidth.width, this.currentY+70);
+          this.modalProgress = false;
         });
       }, 2500);
     },
@@ -479,7 +470,7 @@ export default {
       this.renderImage();
       if(res.status==201){
         this.sendSuccess = true;
-        this.currentY = 500;
+        this.currentY = 210;
       } else {
         Object.keys(res).forEach(key => {
           this.errors.push(res[key]);
@@ -487,7 +478,7 @@ export default {
         this.$refs['modal-1'].hide();
         document.getElementById("errors-holder").scrollIntoView({behavior: 'smooth', block: "center"});
         this.flag = false;
-        this.currentY = 500;
+        this.currentY = 210;
         this.modalProgress = true;
         this.canvasProgress = false;
       }
@@ -592,10 +583,11 @@ export default {
   background: linear-gradient(180deg, #0192DE 0%, #BBC7DF 105.73%);
 }
 .greeting-heading{
-  -webkit-text-stroke: 0.5px #fff;
+  -webkit-text-stroke: 0.25px #fff;
+  color: #fff;
   font-weight: 900;
   font-size: 2rem;
-  text-shadow: 0px 0px 5px #fff;
+  text-shadow: 0px 0px 3px #fff;
   text-transform: uppercase;
 }
 .card-group{
@@ -644,6 +636,13 @@ export default {
 @media only screen and (max-width: 600px) {
   #campus-image{
     display: none;
+  }
+  #main-frame {
+    width: 425.5px;
+    height: 157.5px;
+  }
+  .subline-modal{
+    font-size: 0.7rem;
   }
 }
 </style>

@@ -14,7 +14,7 @@ import Footer from './components/Footer.vue'
 export default {
   name: 'App',
   created(){
-    document.title = "VHU 24 Years Anniversary"    
+    document.title = "VHU 24 Years Anniversary"
   },
   components: {
     Header,
